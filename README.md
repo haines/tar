@@ -11,7 +11,7 @@ Read and write tar files with Ruby.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'tar'
+gem "tar"
 ```
 
 And then execute:
@@ -25,8 +25,21 @@ Or install it yourself as:
 
 ## Usage
 
-TODO
+### Reading tar files
 
+Tar files can be read from IO streams, for example `File`s or `Zlib::GzipReader`s, using a `Tar::Reader`.
+For example, to print the contents of the archive to stdout:
+
+```ruby
+require "tar/reader"
+
+File.open "example.tar" do |archive|
+  Tar::Reader.new(archive).each do |file|
+    puts "==> #{file.header.path} (#{file.header.size} bytes)"
+    puts file.read
+  end
+end
+```
 
 ## Development
 

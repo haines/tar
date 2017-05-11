@@ -1,6 +1,9 @@
 AllCops:
   TargetRubyVersion: 2.4
 
+Metrics/AbcSize:
+  Enabled: false
+
 Metrics/ClassLength:
   Enabled: false
 
