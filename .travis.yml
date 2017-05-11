@@ -1,0 +1,8 @@
+language: ruby
+rvm:
+  - 2.4.1
+  - 2.3.4
+  - 2.2.7
+sudo: false
+
+after_success: '[[ "$TRAVIS_JOB_NUMBER" == *.1 ]] && bundle exec codeclimate-test-reporter'
