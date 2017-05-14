@@ -85,15 +85,15 @@ class ReaderTest < Minitest::Test
       "000456 \0" +               # gid
       format("%011o ", size) +    # size
       "13105143071 " +            # mtime
-      "013305\0 " +               # chksum
+      "013305\0 " +               # checksum
       "0" +                       # typeflag
-      "\0" * 100 +                # linkname
+      "\0" * 100 +                # link_name
       "ustar\0" +                 # magic
       "00" +                      # version
       "haines".ljust(32, "\0") +  # uname
       "staff".ljust(32, "\0") +   # gname
-      "000000 \0" +               # devmajor
-      "000000 \0" +               # devminor
+      "000000 \0" +               # dev_major
+      "000000 \0" +               # dev_minor
       "\0" * 155 +                # prefix
       "\0" * 12                   # padding
   end
