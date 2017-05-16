@@ -9,6 +9,7 @@ module Tar
     include Enumerable
 
     def initialize(io)
+      # TODO: accept encoding options to apply to all files
       @io = io
       @header_reader = HeaderReader.new(@io)
     end
