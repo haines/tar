@@ -26,6 +26,30 @@ class FileReaderTest < Minitest::Test
     assert_equal "hoiho\ntawaki\n", file.read
   end
 
+  def test_read_changes_pos
+    file = file_containing("kererū")
+
+    file.read
+
+    assert_equal 7, file.pos
+  end
+
+  def test_read_leaves_file_at_eof
+    file = file_containing("whio")
+
+    file.read
+
+    assert file.eof?
+  end
+
+  def test_read_at_eof_returns_empty_string
+    file = file_containing("kea")
+
+    file.read
+
+    assert_equal "", file.read
+  end
+
   def test_a_new_file_has_default_encodings
     file = with_default_encoding(external: "ISO-8859-1", internal: "Windows-1252") {
       Tar::FileReader.new(any_header, any_io)

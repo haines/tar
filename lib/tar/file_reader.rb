@@ -4,7 +4,8 @@ require "tar/ustar"
 
 module Tar
   class FileReader
-    attr_reader :header, :external_encoding, :internal_encoding
+    attr_reader :header, :external_encoding, :internal_encoding, :pos
+    alias tell pos
 
     def initialize(header, io, external_encoding: Encoding.default_external, internal_encoding: Encoding.default_internal, **encoding_options)
       @header = header
@@ -13,9 +14,14 @@ module Tar
       set_encoding external_encoding, internal_encoding, **encoding_options
     end
 
+    def eof?
+      @pos >= @header.size
+    end
+    alias eof eof?
+
     def read
+      return "" if eof?
       data = @io.read(@header.size)
-      return nil if data.nil?
       @pos += @header.size
       encode(data)
     end
