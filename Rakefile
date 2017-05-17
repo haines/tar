@@ -8,4 +8,9 @@ Rake::TestTask.new(:test) do |t|
   t.warning = true
 end
 
+if RUBY_ENGINE == "ruby"
+  require "char_size/rake/generator_task"
+  CharSize::Rake::GeneratorTask.new
+end
+
 task :default => :test
