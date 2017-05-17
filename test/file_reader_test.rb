@@ -50,6 +50,49 @@ class FileReaderTest < Minitest::Test
     assert_equal "", file.read
   end
 
+  def test_partial_read
+    file = file_containing("moa")
+
+    assert_equal "mo", file.read(2)
+  end
+
+  def test_partial_read_changes_pos
+    file = file_containing("korimako")
+
+    file.read 2
+    assert_equal 2, file.pos
+    file.read 2
+    assert_equal 4, file.pos
+  end
+
+  def test_partial_read_beyond_eof_returns_shorter_string_than_requested
+    file = file_containing("tīeke")
+    file.read 3
+
+    assert_equal "eke", file.read(42)
+  end
+
+  def test_partial_read_beyond_eof_sets_pos_to_eof
+    file = file_containing("hihi")
+
+    file.read 42
+
+    assert_equal 4, file.pos
+  end
+
+  def test_partial_read_at_eof_returns_empty_string
+    file = file_containing("riroriro")
+    file.read 8
+
+    assert_equal "", file.read(9000)
+  end
+
+  def test_partial_read_returns_binary_regardless_of_encoding_options
+    file = file_containing("tūī", external_encoding: "UTF-8")
+
+    assert_equal binary("t\xC5\xAB"), file.read(3)
+  end
+
   def test_a_new_file_has_default_encodings
     file = with_default_encoding(external: "ISO-8859-1", internal: "Windows-1252") {
       Tar::FileReader.new(any_header, any_io)
@@ -206,6 +249,10 @@ class FileReaderTest < Minitest::Test
 
   def io_containing(contents)
     StringIO.new("______#{contents}______").tap { |io| io.pos = 6 }
+  end
+
+  def binary(string)
+    string.dup.force_encoding("binary")
   end
 
   def with_default_encoding(external:, internal:)

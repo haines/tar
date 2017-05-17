@@ -19,10 +19,14 @@ module Tar
     end
     alias eof eof?
 
-    def read
-      return "" if eof?
-      data = @io.read(@header.size)
-      @pos += @header.size
+    def pending
+      [0, @header.size - @pos].max
+    end
+
+    def read(length = nil)
+      data = @io.read(truncate(length))
+      @pos += data.bytesize
+      return data if length
       encode(data)
     end
 
@@ -47,6 +51,10 @@ module Tar
     end
 
     private
+
+    def truncate(length)
+      [pending, length].compact.min
+    end
 
     def extract_encodings(external_encoding, *internal_encoding)
       raise ArgumentError, "wrong number of arguments (given #{internal_encoding.size + 1}, expected 1..2)" if internal_encoding.size > 1
