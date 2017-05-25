@@ -325,12 +325,6 @@ module FileReaderTest
       end
     end
 
-    def test_is_a_tty_if_underlying_io_is_a_tty
-      file = Tar::FileReader.new(any_header, File.new("/dev/tty"))
-
-      assert file.tty?
-    end
-
     def test_is_not_a_tty_if_underlying_io_is_not_a_tty
       file = Tar::FileReader.new(any_header, io_containing("not a tty!"))
 

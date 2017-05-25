@@ -49,10 +49,15 @@ module Tar
 
     def read(length = nil, buffer = nil)
       check_not_closed!
+
       data = @io.read(truncate(length), buffer)
       @pos += data.bytesize
-      return data if length
-      encode(data)
+
+      if length.nil?
+        encode(data)
+      else
+        data.force_encoding(Encoding::BINARY)
+      end
     end
 
     def skip_to_next_record
