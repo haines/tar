@@ -2,11 +2,15 @@
 
 require_relative "../test_helper"
 require_relative "common_tests"
+require_relative "read_to_buffer_tests"
+require_relative "seek_tests"
 require "tempfile"
 
 module FileReaderTest
   class FileTest < Minitest::Test
     include CommonTests
+    include ReadToBufferTests
+    include SeekTests
 
     def test_is_a_tty_if_underlying_io_is_a_tty
       file = Tar::FileReader.new(any_header, File.new("/dev/tty"))

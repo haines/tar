@@ -3,5 +3,6 @@
 module Tar
   Error = Class.new(StandardError)
   InvalidArchive = Class.new(Error)
+  SeekNotSupported = Class.new(Error)
   UnexpectedEOF = Class.new(Error)
 end

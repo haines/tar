@@ -85,7 +85,7 @@ module FileReaderTest
 
     def test_partial_read_beyond_eof_returns_shorter_string_than_requested
       file = file_containing("tīeke")
-      file.pos = 3
+      file.read 3
 
       assert_equal "eke", file.read(42)
     end
@@ -106,33 +106,6 @@ module FileReaderTest
       file = file_containing("tūī", external_encoding: "UTF-8")
 
       assert_equal binary("t\xC5\xAB"), file.read(3)
-    end
-
-    def test_read_to_buffer_without_internal_encoding
-      file = file_containing("k\xE2rearea", external_encoding: "ISO-8859-13")
-      buffer = +"this data will be overwritten"
-
-      file.read nil, buffer
-
-      assert_equal iso_8859_13("k\xE2rearea"), buffer
-    end
-
-    def test_read_to_buffer_with_internal_encoding
-      file = file_containing("t\xFBturiwhatu", external_encoding: "ISO-8859-13", internal_encoding: "UTF-8")
-      buffer = +"this data will be overwritten"
-
-      file.read nil, buffer
-
-      assert_equal "tūturiwhatu", buffer
-    end
-
-    def test_partial_read_to_buffer
-      file = file_containing("pūtangitangi")
-      buffer = +"this data will be overwritten"
-
-      file.read 5, buffer
-
-      assert_equal binary("p\xC5\xABta"), buffer
     end
 
     def test_cannot_read_when_closed
@@ -337,130 +310,12 @@ module FileReaderTest
       end
     end
 
-    def test_seek_to_absolute_pos
-      file = file_containing("takahē")
-
-      file.seek 3
-
-      assert_equal 3, file.pos
-      assert_equal "ahē", file.read
-    end
-
-    def test_explicitly_seek_to_absolute_pos_with_constant
-      file = file_containing("kākāriki")
-
-      file.seek 5, IO::SEEK_SET
-
-      assert_equal 5, file.pos
-      assert_equal "\x81riki", file.read
-    end
-
-    def test_explicitly_seek_to_absolute_pos_with_symbol
-      file = file_containing("mātuhituhi")
-
-      file.seek 7, :SET
-
-      assert_equal 7, file.pos
-      assert_equal "tuhi", file.read
-    end
-
-    def test_seek_by_relative_offset_with_constant
-      file = file_containing("kōkako")
-      file.pos = 4
-
-      file.seek 2, IO::SEEK_CUR
-
-      assert_equal 6, file.pos
-      assert_equal "o", file.read
-    end
-
-    def test_seek_by_relative_offset_with_symbol
-      file = file_containing("pūkeko")
-      file.pos = 6
-
-      file.seek(-3, :CUR)
-
-      assert_equal 3, file.pos
-      assert_equal "keko", file.read
-    end
-
-    def test_seek_from_end_with_constant
-      file = file_containing("tītipounamu")
-
-      file.seek(-3, IO::SEEK_END)
-
-      assert_equal 9, file.pos
-      assert_equal "amu", file.read
-    end
-
-    def test_seek_from_end_with_symbol
-      file = file_containing("kākā")
-
-      file.seek(-2, :END)
-
-      assert_equal 4, file.pos
-      assert_equal "ā", file.read
-    end
-
-    def test_seek_with_unknown_mode
-      file = file_containing("parekareka")
-
-      assert_raises ArgumentError do
-        file.seek 42, :NONSENSE
-      end
-    end
-
-    def test_cannot_seek_when_closed
-      assert_raises IOError do
-        closed_file.seek 50
-      end
-    end
-
-    def test_set_pos
-      file = file_containing("pāpango")
-
-      file.pos = 8
-
-      assert_equal 8, file.pos
-    end
-
-    def test_cannot_set_pos_when_closed
-      assert_raises IOError do
-        closed_file.seek 9000
-      end
-    end
-
     def test_a_new_file_is_at_pos_0
       assert_equal 0, @file.pos
     end
 
     def test_a_new_file_is_at_lineno_0
       assert_equal 0, @file.lineno
-    end
-
-    def test_rewind_resets_pos
-      file = file_containing("mātātā")
-      file.pos = 6
-
-      file.rewind
-
-      assert_equal 0, file.pos
-      assert_equal "mātātā", file.read
-    end
-
-    def test_rewind_resets_lineno
-      file = file_containing("kōtuku")
-      file.lineno = 11
-
-      file.rewind
-
-      assert_equal 0, file.lineno
-    end
-
-    def test_cannot_rewind_when_closed
-      assert_raises IOError do
-        closed_file.rewind
-      end
     end
 
     def test_skip_to_next_record
@@ -473,14 +328,6 @@ module FileReaderTest
       assert_equal 512, file.pos
       assert file.eof?
       assert_equal 518, io.pos
-    end
-
-    def test_read_after_seek
-      file = file_containing("kōtare")
-
-      file.seek 4
-
-      assert_equal "are", file.read
     end
 
     def test_getbyte
@@ -512,7 +359,7 @@ module FileReaderTest
 
     def test_ungetbyte
       file = file_containing("koekoeā")
-      file.pos = 4
+      file.read 4
 
       file.ungetbyte 0x21
 
@@ -538,7 +385,7 @@ module FileReaderTest
 
     def test_ungetbyte_decrements_pos
       file = file_containing("ngutuparore")
-      file.pos = 7
+      file.read 7
 
       file.ungetbyte 0x7E
 
@@ -686,7 +533,7 @@ module FileReaderTest
 
     def test_getc_handles_invalid_encoding_near_eof
       file = file_containing("kāh\xC5u")
-      file.pos = 3
+      file.read 3
 
       assert_equal "h", file.getc
       assert_equal "\xC5", file.getc
@@ -695,7 +542,7 @@ module FileReaderTest
 
     def test_ungetc
       file = file_containing("kuruwhengu")
-      file.pos = 5
+      file.read 5
 
       file.ungetc "ā"
 
@@ -704,7 +551,7 @@ module FileReaderTest
 
     def test_ungetc_with_different_external_encoding
       file = file_containing("t\xEEtiti", external_encoding: "ISO-8859-13")
-      file.pos = 1
+      file.read 1
 
       file.ungetc "ē"
 
@@ -713,7 +560,7 @@ module FileReaderTest
 
     def test_ungetc_with_multiple_chars
       file = file_containing("pāteke")
-      file.pos = 4
+      file.read 4
 
       file.ungetc "koitar"
 
@@ -739,7 +586,7 @@ module FileReaderTest
 
     def test_ungetc_decrements_pos
       file = file_containing("karuwai")
-      file.pos = 3
+      file.read 3
 
       file.ungetc "ū"
 
@@ -792,7 +639,7 @@ module FileReaderTest
 
     def test_readchar_handles_invalid_encoding_near_eof
       file = file_containing("kāh\xC5u")
-      file.pos = 3
+      file.read 3
 
       assert_equal "h", file.readchar
       assert_equal "\xC5", file.readchar
@@ -1565,7 +1412,7 @@ module FileReaderTest
     end
 
     def file_at_eof
-      file_containing("...").tap { |file| file.pos = 3 }
+      file_containing("...").tap { |file| file.read 3 }
     end
 
     def binary(string)

@@ -3,12 +3,14 @@
 require "char_size"
 require "tar/backports"
 require "tar/file_reader/line"
+require "tar/polyfills"
 require "tar/ustar"
 
 module Tar
   class FileReader
     include Enumerable
     using Backports
+    using Polyfills
 
     attr_reader :header
     attr_accessor :lineno
@@ -61,7 +63,14 @@ module Tar
     end
 
     def skip_to_next_record
-      seek USTAR.records_size(@header.size)
+      target_pos = USTAR.records_size(@header.size)
+
+      if seekable?
+        seek target_pos
+      else
+        @io.read(target_pos - @pos)
+        @pos = target_pos
+      end
     end
 
     def external_encoding
@@ -94,11 +103,12 @@ module Tar
 
     def tty?
       check_not_closed!
-      @io.tty?
+      @io.respond_to?(:tty?) && @io.tty?
     end
     alias isatty tty?
 
     def seek(amount, mode = IO::SEEK_SET)
+      check_seekable!
       check_not_closed!
       offset = relativize(amount, mode)
       @io.seek offset, IO::SEEK_CUR
@@ -280,6 +290,14 @@ module Tar
 
     def check_not_eof!
       raise EOFError, "end of file reached" if eof?
+    end
+
+    def seekable?
+      @io.respond_to?(:seek)
+    end
+
+    def check_seekable!
+      raise SeekNotSupported, "seek not supported by #{@io}" unless seekable?
     end
   end
 end
