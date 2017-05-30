@@ -6,7 +6,7 @@
 module CharSize
   CHAR_SIZES = {
     "ASCII-8BIT" => [1, 1].freeze,
-    "UTF-8" => [1, 6].freeze,
+    "UTF-8" => [1, 4].freeze,
     "US-ASCII" => [1, 1].freeze,
     "UTF-16BE" => [2, 4].freeze,
     "UTF-16LE" => [2, 4].freeze,
@@ -14,7 +14,7 @@ module CharSize
     "UTF-32LE" => [4, 4].freeze,
     "UTF-16" => [2, 4].freeze,
     "UTF-32" => [4, 4].freeze,
-    "UTF8-MAC" => [1, 6].freeze,
+    "UTF8-MAC" => [1, 4].freeze,
     "EUC-JP" => [1, 3].freeze,
     "Windows-31J" => [1, 2].freeze,
     "Big5" => [1, 2].freeze,
@@ -98,13 +98,13 @@ module CharSize
     "Windows-874" => [1, 1].freeze,
     "MacJapanese" => [1, 2].freeze,
     "UTF-7" => [1, 1].freeze,
-    "UTF8-DoCoMo" => [1, 6].freeze,
+    "UTF8-DoCoMo" => [1, 4].freeze,
     "SJIS-DoCoMo" => [1, 2].freeze,
-    "UTF8-KDDI" => [1, 6].freeze,
+    "UTF8-KDDI" => [1, 4].freeze,
     "SJIS-KDDI" => [1, 2].freeze,
     "ISO-2022-JP-KDDI" => [1, 1].freeze,
     "stateless-ISO-2022-JP-KDDI" => [1, 4].freeze,
-    "UTF8-SoftBank" => [1, 6].freeze,
+    "UTF8-SoftBank" => [1, 4].freeze,
     "SJIS-SoftBank" => [1, 2].freeze
   }.freeze
   private_constant :CHAR_SIZES
