@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module FileReaderTest
-  module SeekTests
+  module Seek
     def test_seek_to_absolute_pos
       file = file_containing("takahē")
 

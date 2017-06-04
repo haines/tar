@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module FileReaderTest
-  module SeekUnsupportedTests
+  module SeekUnsupported
     def test_cannot_seek_to_absolute_pos
       file = file_containing("takahē")
 

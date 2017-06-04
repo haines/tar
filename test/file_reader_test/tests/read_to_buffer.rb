@@ -3,7 +3,7 @@
 require "tar/backports"
 
 module FileReaderTest
-  module ReadToBufferTests
+  module ReadToBuffer
     using Tar::Backports
 
     def test_read_to_buffer_without_internal_encoding

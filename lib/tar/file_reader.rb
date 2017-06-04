@@ -13,7 +13,6 @@ module Tar
     using Polyfills
 
     attr_reader :header
-    attr_accessor :lineno
 
     def initialize(header, io, external_encoding: Encoding.default_external, internal_encoding: Encoding.default_internal, **encoding_options)
       @header = header
@@ -44,9 +43,23 @@ module Tar
     end
     alias tell pos
 
+    def pos=(new_pos)
+      seek new_pos
+    end
+
     def pending
       check_not_closed!
       [0, @header.size - @pos].max
+    end
+
+    def lineno
+      check_not_closed!
+      @lineno
+    end
+
+    def lineno=(new_lineno)
+      check_not_closed!
+      @lineno = new_lineno
     end
 
     def read(length = nil, buffer = nil)
@@ -63,6 +76,8 @@ module Tar
     end
 
     def skip_to_next_record
+      check_not_closed!
+
       target_pos = USTAR.records_size(@header.size)
 
       if seekable?
@@ -113,10 +128,6 @@ module Tar
       offset = relativize(amount, mode)
       @io.seek offset, IO::SEEK_CUR
       @pos += offset
-    end
-
-    def pos=(new_pos)
-      seek new_pos
     end
 
     def rewind

@@ -10,6 +10,7 @@ module Tar
 
       def initialize(file, *args)
         @file = file
+        @skip = nil
 
         case args.size
         when 0
@@ -28,13 +29,34 @@ module Tar
       def read
         return @file.read if read_to_eof?
 
-        line = String.new(encoding: @file.internal_encoding || @file.external_encoding)
+        skip_newlines if @skip
+        line = read_line
+        skip_newlines if @skip
+        line
+      end
+
+      private
+
+      def skip_newlines
+        until @file.eof?
+          char = @file.getc
+          if char != @skip
+            @file.ungetc char
+            break
+          end
+        end
+      end
+
+      def read_line
+        line = String.new(encoding: encoding)
         line << @file.getc until stop_reading?(line)
         @file.lineno += 1 if reached_separator?(line)
         line
       end
 
-      private
+      def encoding
+        @file.internal_encoding || @file.external_encoding
+      end
 
       def drop_internal_frames(stacktrace)
         stacktrace.drop_while { |frame| frame.include?("in `new'") }
@@ -59,12 +81,15 @@ module Tar
       end
 
       def extract_separator(separator)
-        @separator =
-          case separator
-          when nil then nil
-          when "" then "\n\n"
-          else separator.to_str
-          end
+        case separator
+        when nil
+          @separator = nil
+        when ""
+          @separator = "\n\n".encode(encoding)
+          @skip = "\n".encode(encoding)
+        else
+          @separator = separator.to_str.encode(encoding)
+        end
       end
 
       def extract_limit(limit)
