@@ -99,9 +99,14 @@ module Tar
     end
 
     def set_encoding(external_encoding, *internal_encoding, **encoding_options)
-      # TODO: allow setting encoding from BOM
       check_not_closed!
+
       external_encoding, internal_encoding = extract_encodings(external_encoding, *internal_encoding)
+
+      if parse_bom?(external_encoding)
+        external_encoding = parse_bom || external_encoding[4..-1]
+      end
+
       @external_encoding = find_encoding(external_encoding, if_nil: Encoding.default_external, if_unsupported: Encoding.default_external)
       @internal_encoding = find_encoding(internal_encoding, if_nil: nil, if_unsupported: Encoding.default_internal)
       @encoding_options = encoding_options
@@ -266,6 +271,15 @@ module Tar
       external_encoding.split(":", 2)
     end
 
+    def parse_bom?(encoding)
+      encoding.is_a?(String) && /^BOM\|/i.match?(encoding)
+    end
+
+    def parse_bom
+      return nil unless pos.zero?
+      walk_bom_tree(BOM_TREE)
+    end
+
     def find_encoding(encoding, if_nil:, if_unsupported:)
       return if_nil if encoding.nil? || encoding == ""
       Encoding.find(encoding)
@@ -310,5 +324,20 @@ module Tar
     def check_seekable!
       raise SeekNotSupported, "seek not supported by #{@io}" unless seekable?
     end
+
+    def walk_bom_tree((tree, encoding))
+      byte = getbyte
+      found_encoding = walk_bom_tree(tree[byte]) if tree.key?(byte)
+      ungetbyte byte unless found_encoding
+      found_encoding || encoding
+    end
+
+    BOM_TREE = {
+      0x00 => { 0x00 => { 0xFE => { 0xFF => [{}, Encoding::UTF_32BE] } } },
+      0xEF => { 0xBB => { 0xBF => [{}, Encoding::UTF_8] } },
+      0xFE => { 0xFF => [{}, Encoding::UTF_16BE] },
+      0xFF => { 0xFE => [{ 0x00 => { 0x00 => [{}, Encoding::UTF_32LE] } }, Encoding::UTF_16LE] }
+    }.freeze
+    private_constant :BOM_TREE
   end
 end

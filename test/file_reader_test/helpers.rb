@@ -40,6 +40,10 @@ module FileReaderTest
       string.dup.force_encoding("ISO-8859-13")
     end
 
+    def us_ascii(string)
+      string.dup.force_encoding("US-ASCII")
+    end
+
     def with_input_record_separator(input_record_separator)
       previous_input_record_separator = $INPUT_RECORD_SEPARATOR
       $INPUT_RECORD_SEPARATOR = input_record_separator
