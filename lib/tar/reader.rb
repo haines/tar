@@ -8,9 +8,9 @@ module Tar
   class Reader
     include Enumerable
 
-    def initialize(io)
-      # TODO: accept encoding options to apply to all files
+    def initialize(io, **encoding_options)
       @io = io
+      @encoding_options = encoding_options
       @header_reader = HeaderReader.new(@io)
     end
 
@@ -21,7 +21,7 @@ module Tar
         header = @header_reader.read
         break if header.nil?
 
-        file_reader = FileReader.new(header, @io)
+        file_reader = FileReader.new(header, @io, **@encoding_options)
         yield file_reader
         file_reader.skip_to_next_record
       end

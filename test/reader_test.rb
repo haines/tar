@@ -57,6 +57,17 @@ class ReaderTest < Minitest::Test
     end
   end
 
+  def test_read_with_encoding_options
+    archive = archive_of(
+      "path/to/first" => "tahi\r\nrua\r\n",
+      "path/to/second" => "toru\r\nwh\xE2\r\n"
+    )
+
+    reader = Tar::Reader.new(archive, external_encoding: "ISO-8859-13", internal_encoding: "UTF-8", universal_newline: true)
+
+    assert_equal ["tahi\nrua\n", "toru\nwhā\n"], reader.map(&:read)
+  end
+
   private
 
   def empty_archive
