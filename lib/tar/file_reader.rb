@@ -75,6 +75,14 @@ module Tar
       end
     end
 
+    def readpartial(max_length, buffer = nil)
+      check_not_closed!
+
+      data = @io.readpartial(truncate(max_length), buffer)
+      @pos += data.bytesize
+      data.force_encoding(Encoding::BINARY)
+    end
+
     def skip_to_next_record
       check_not_closed!
 
