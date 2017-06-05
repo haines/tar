@@ -318,7 +318,13 @@ module Tar
     end
 
     def seekable?
-      @io.respond_to?(:seek)
+      return @seekable if defined?(@seekable)
+      @seekable = @io.respond_to?(:seek) && begin
+        @io.pos
+        true
+      rescue Errno::ESPIPE
+        false
+      end
     end
 
     def check_seekable!

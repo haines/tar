@@ -3,7 +3,7 @@
 module FileReaderTest
   module SkipToNextRecord
     def test_skip_to_next_record
-      io = io_containing("ruru".ljust(512, "\0"))
+      io = io_containing("ruru".ljust(512, "\0") + "huia")
       file = Tar::FileReader.new(header(size: 4), io)
       file.read
 
@@ -11,7 +11,7 @@ module FileReaderTest
 
       assert_equal 512, file.pos
       assert file.eof?
-      assert_equal 518, io.pos
+      assert_equal "huia", io.read(4)
     end
 
     def test_cannot_skip_to_next_record_when_closed
