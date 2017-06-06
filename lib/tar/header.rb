@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require "tar/backports"
 require "tar/error"
 require "tar/schema"
 require "tar/ustar"
 
 module Tar
   class Header
+    using Backports
+
     SCHEMA = Schema.new {
       string :name, 100
       octal_number :mode, 8
@@ -25,13 +28,14 @@ module Tar
       string :prefix, 155
     }
 
-    def initialize(fields)
-      @fields = fields
+    def initialize(values, checksum: nil)
+      @values = values
+      check_checksum!(checksum) if checksum
     end
 
     SCHEMA.field_names.each do |name|
       define_method name do
-        @fields.fetch(name)
+        @values.fetch(name)
       end
     end
 
@@ -41,7 +45,14 @@ module Tar
     end
 
     def self.parse(record)
-      new(SCHEMA.parse(record))
+      expected_checksum = SCHEMA.clear(record, :checksum).chars.sum(&:ord)
+      new(SCHEMA.parse(record), checksum: expected_checksum)
+    end
+
+    private
+
+    def check_checksum!(expected_checksum)
+      raise ChecksumMismatch, "checksum mismatch at #{path.inspect}: expected #{expected_checksum}, got #{checksum}" unless checksum == expected_checksum
     end
   end
 end

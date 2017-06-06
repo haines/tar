@@ -18,7 +18,7 @@ module Tar
 
       if empty?(record)
         return nil if empty?(read_record)
-        raise Tar::InvalidArchive, "empty header"
+        raise InvalidArchive, "empty header"
       end
 
       Header.parse(record)

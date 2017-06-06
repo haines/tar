@@ -2,6 +2,14 @@
 
 module Tar
   module Backports
+    unless Enumerable.public_method_defined?(:sum)
+      refine Array do
+        def sum(identity = 0)
+          reduce(identity) { |acc, value| acc + (block_given? ? yield(value) : value) }
+        end
+      end
+    end
+
     unless Numeric.public_method_defined?(:negative?)
       refine Numeric do
         def negative?

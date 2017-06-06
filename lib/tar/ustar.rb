@@ -11,7 +11,7 @@ module Tar
     def read_record(io)
       record = io.read(RECORD_SIZE) || ""
 
-      raise Tar::UnexpectedEOF, "unexpected end-of-file: attempted to read #{RECORD_SIZE} bytes from #{io}, got #{record.size}" unless record.size == RECORD_SIZE
+      raise UnexpectedEOF, "unexpected end-of-file: attempted to read #{RECORD_SIZE} bytes from #{io}, got #{record.size}" unless record.size == RECORD_SIZE
 
       record
     end

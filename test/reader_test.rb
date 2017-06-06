@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require_relative "test_helper"
+require "tar/backports"
 require "tar/reader"
 
 class ReaderTest < Minitest::Test
+  using Tar::Backports
+
   def test_read_empty_archive
     archive = empty_archive
 
@@ -90,23 +93,26 @@ class ReaderTest < Minitest::Test
   end
 
   def header(path:, size:)
-    path.ljust(100, "\0") +       # name
-      "000644 \0" +               # mode
-      "000123 \0" +               # uid
-      "000456 \0" +               # gid
-      format("%011o ", size) +    # size
-      "13105143071 " +            # mtime
-      "013305\0 " +               # checksum
-      "0" +                       # typeflag
-      "\0" * 100 +                # link_name
-      "ustar\0" +                 # magic
-      "00" +                      # version
-      "haines".ljust(32, "\0") +  # uname
-      "staff".ljust(32, "\0") +   # gname
-      "000000 \0" +               # dev_major
-      "000000 \0" +               # dev_minor
-      "\0" * 155 +                # prefix
-      "\0" * 12                   # padding
+    size = format("%011o ", size)
+    checksum = format("%07o\0", 4344 + (path + size).chars.sum(&:ord))
+
+    path.ljust(100, "\0") +         # name
+      "000644 \0" +                 # mode
+      "000123 \0" +                 # uid
+      "000456 \0" +                 # gid
+      size +                        # size
+      "13105143071 " +              # mtime
+      checksum +                    # checksum
+      "0" +                         # typeflag
+      "\0" * 100 +                  # link_name
+      "ustar\0" +                   # magic
+      "00" +                        # version
+      "haines".ljust(32, "\0") +    # uname
+      "staff".ljust(32, "\0") +     # gname
+      "000000 \0" +                 # dev_major
+      "000000 \0" +                 # dev_minor
+      "\0" * 155 +                  # prefix
+      "\0" * 12                     # padding
   end
 
   def assert_eof(archive)
