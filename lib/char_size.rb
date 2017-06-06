@@ -1,0 +1,123 @@
+# frozen_string_literal: true
+
+# This module was generated using the CharSize gem.
+# To regenerate, run
+#   rake char_size
+module CharSize
+  CHAR_SIZES = {
+    "ASCII-8BIT" => [1, 1].freeze,
+    "UTF-8" => [1, 4].freeze,
+    "US-ASCII" => [1, 1].freeze,
+    "UTF-16BE" => [2, 4].freeze,
+    "UTF-16LE" => [2, 4].freeze,
+    "UTF-32BE" => [4, 4].freeze,
+    "UTF-32LE" => [4, 4].freeze,
+    "UTF-16" => [2, 4].freeze,
+    "UTF-32" => [4, 4].freeze,
+    "UTF8-MAC" => [1, 4].freeze,
+    "EUC-JP" => [1, 3].freeze,
+    "Windows-31J" => [1, 2].freeze,
+    "Big5" => [1, 2].freeze,
+    "Big5-HKSCS" => [1, 2].freeze,
+    "Big5-UAO" => [1, 2].freeze,
+    "CP949" => [1, 2].freeze,
+    "Emacs-Mule" => [1, 4].freeze,
+    "EUC-KR" => [1, 2].freeze,
+    "EUC-TW" => [1, 4].freeze,
+    "GB2312" => [1, 2].freeze,
+    "GB18030" => [1, 4].freeze,
+    "GBK" => [1, 2].freeze,
+    "ISO-8859-1" => [1, 1].freeze,
+    "ISO-8859-2" => [1, 1].freeze,
+    "ISO-8859-3" => [1, 1].freeze,
+    "ISO-8859-4" => [1, 1].freeze,
+    "ISO-8859-5" => [1, 1].freeze,
+    "ISO-8859-6" => [1, 1].freeze,
+    "ISO-8859-7" => [1, 1].freeze,
+    "ISO-8859-8" => [1, 1].freeze,
+    "ISO-8859-9" => [1, 1].freeze,
+    "ISO-8859-10" => [1, 1].freeze,
+    "ISO-8859-11" => [1, 1].freeze,
+    "ISO-8859-13" => [1, 1].freeze,
+    "ISO-8859-14" => [1, 1].freeze,
+    "ISO-8859-15" => [1, 1].freeze,
+    "ISO-8859-16" => [1, 1].freeze,
+    "KOI8-R" => [1, 1].freeze,
+    "KOI8-U" => [1, 1].freeze,
+    "Shift_JIS" => [1, 2].freeze,
+    "Windows-1250" => [1, 1].freeze,
+    "Windows-1251" => [1, 1].freeze,
+    "Windows-1252" => [1, 1].freeze,
+    "Windows-1253" => [1, 1].freeze,
+    "Windows-1254" => [1, 1].freeze,
+    "Windows-1257" => [1, 1].freeze,
+    "IBM437" => [1, 1].freeze,
+    "IBM737" => [1, 1].freeze,
+    "IBM775" => [1, 1].freeze,
+    "CP850" => [1, 1].freeze,
+    "IBM852" => [1, 1].freeze,
+    "CP852" => [1, 1].freeze,
+    "IBM855" => [1, 1].freeze,
+    "CP855" => [1, 1].freeze,
+    "IBM857" => [1, 1].freeze,
+    "IBM860" => [1, 1].freeze,
+    "IBM861" => [1, 1].freeze,
+    "IBM862" => [1, 1].freeze,
+    "IBM863" => [1, 1].freeze,
+    "IBM864" => [1, 1].freeze,
+    "IBM865" => [1, 1].freeze,
+    "IBM866" => [1, 1].freeze,
+    "IBM869" => [1, 1].freeze,
+    "Windows-1258" => [1, 1].freeze,
+    "GB1988" => [1, 1].freeze,
+    "macCentEuro" => [1, 1].freeze,
+    "macCroatian" => [1, 1].freeze,
+    "macCyrillic" => [1, 1].freeze,
+    "macGreek" => [1, 1].freeze,
+    "macIceland" => [1, 1].freeze,
+    "macRoman" => [1, 1].freeze,
+    "macRomania" => [1, 1].freeze,
+    "macThai" => [1, 1].freeze,
+    "macTurkish" => [1, 1].freeze,
+    "macUkraine" => [1, 1].freeze,
+    "CP950" => [1, 2].freeze,
+    "CP951" => [1, 2].freeze,
+    "IBM037" => [1, 1].freeze,
+    "stateless-ISO-2022-JP" => [1, 4].freeze,
+    "eucJP-ms" => [1, 3].freeze,
+    "CP51932" => [1, 3].freeze,
+    "EUC-JIS-2004" => [1, 3].freeze,
+    "GB12345" => [1, 2].freeze,
+    "ISO-2022-JP" => [1, 1].freeze,
+    "ISO-2022-JP-2" => [1, 1].freeze,
+    "CP50220" => [1, 1].freeze,
+    "CP50221" => [1, 1].freeze,
+    "Windows-1256" => [1, 1].freeze,
+    "Windows-1255" => [1, 1].freeze,
+    "TIS-620" => [1, 1].freeze,
+    "Windows-874" => [1, 1].freeze,
+    "MacJapanese" => [1, 2].freeze,
+    "UTF-7" => [1, 1].freeze,
+    "UTF8-DoCoMo" => [1, 4].freeze,
+    "SJIS-DoCoMo" => [1, 2].freeze,
+    "UTF8-KDDI" => [1, 4].freeze,
+    "SJIS-KDDI" => [1, 2].freeze,
+    "ISO-2022-JP-KDDI" => [1, 1].freeze,
+    "stateless-ISO-2022-JP-KDDI" => [1, 4].freeze,
+    "UTF8-SoftBank" => [1, 4].freeze,
+    "SJIS-SoftBank" => [1, 2].freeze
+  }.freeze
+  private_constant :CHAR_SIZES
+
+  def self.min(encoding_or_name)
+    minmax(encoding_or_name).first
+  end
+
+  def self.max(encoding_or_name)
+    minmax(encoding_or_name).last
+  end
+
+  def self.minmax(encoding_or_name)
+    CHAR_SIZES.fetch(Encoding.find(encoding_or_name).name)
+  end
+end

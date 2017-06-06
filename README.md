@@ -1,7 +1,9 @@
 # Tar
 
-[![Build Status](https://travis-ci.org/haines/tar.svg?branch=master)](https://travis-ci.org/haines/tar)
-[![Code Climate](https://codeclimate.com/github/haines/tar/badges/gpa.svg)](https://codeclimate.com/github/haines/tar)
+[![Latest version](https://img.shields.io/gem/v/tar.svg?style=flat-square)](https://rubygems.org/gems/tar)&nbsp;
+[![Travis CI status](https://img.shields.io/travis/haines/tar.svg?style=flat-square)](https://travis-ci.org/haines/tar)&nbsp;
+[![Code Climate GPA](https://img.shields.io/codeclimate/github/haines/tar.svg?style=flat-square)](https://codeclimate.com/github/haines/tar)&nbsp;
+[![Test coverage](https://img.shields.io/codeclimate/coverage/github/haines/tar.svg?style=flat-square)](https://codeclimate.com/github/haines/tar/coverage)&nbsp;
 
 Read and write tar files with Ruby.
 
@@ -11,27 +13,44 @@ Read and write tar files with Ruby.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'tar'
+gem "tar"
 ```
 
 And then execute:
 
-    $ bundle
+```console
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install tar
+```console
+$ gem install tar
+```
 
 
 ## Usage
 
-TODO
+### Reading tar files
 
+Tar files can be read from IO streams, for example `File`s or `Zlib::GzipReader`s, using a `Tar::Reader`.
+For example, to print the contents of the archive to stdout:
+
+```ruby
+require "tar/reader"
+
+File.open "example.tar" do |archive|
+  Tar::Reader.new(archive).each do |file|
+    puts "==> #{file.header.path} (#{file.header.size} bytes)"
+    puts file.read
+  end
+end
+```
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies.
-Then, run `rake test` to run the tests.
+Then, run `bundle exec rake` to run the tests.
 You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.

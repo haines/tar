@@ -1,13 +1,19 @@
 AllCops:
   TargetRubyVersion: 2.4
 
+Metrics/AbcSize:
+  Enabled: false
+
 Metrics/ClassLength:
+  Enabled: false
+
+Metrics/LineLength:
   Enabled: false
 
 Metrics/MethodLength:
   Enabled: false
 
-Metrics/LineLength:
+Metrics/ModuleLength:
   Enabled: false
 
 Style/BlockDelimiters:
@@ -19,6 +25,10 @@ Style/Documentation:
 Style/HashSyntax:
   Exclude:
     - Rakefile
+
+Style/NumericPredicate:
+  Exclude:
+    - lib/tar/backports.rb
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
