@@ -1,7 +1,9 @@
 # Tar
 
-[![Build Status](https://travis-ci.org/haines/tar.svg?branch=master)](https://travis-ci.org/haines/tar)
-[![Code Climate](https://codeclimate.com/github/haines/tar/badges/gpa.svg)](https://codeclimate.com/github/haines/tar)
+[![Latest version](https://img.shields.io/gem/v/tar.svg?style=flat-square)](https://rubygems.org/gems/tar)&nbsp;
+[![Travis CI status](https://img.shields.io/travis/haines/tar.svg?style=flat-square)](https://travis-ci.org/haines/tar)&nbsp;
+[![Code Climate GPA](https://img.shields.io/codeclimate/github/haines/tar.svg?style=flat-square)](https://codeclimate.com/github/haines/tar)&nbsp;
+[![Test coverage](https://img.shields.io/codeclimate/coverage/github/haines/tar.svg?style=flat-square)](https://codeclimate.com/github/haines/tar/coverage)&nbsp;
 
 Read and write tar files with Ruby.
 
@@ -16,11 +18,15 @@ gem "tar"
 
 And then execute:
 
-    $ bundle
+```console
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install tar
+```console
+$ gem install tar
+```
 
 
 ## Usage
@@ -44,7 +50,7 @@ end
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies.
-Then, run `rake test` to run the tests.
+Then, run `bundle exec rake` to run the tests.
 You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
