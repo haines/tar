@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "tar/file_reader"
+
 module FileReaderTest
   module Helpers
     FakeHeader = Struct.new(:size)
