@@ -31,6 +31,18 @@ class HeaderTest < Minitest::Test
     end
   end
 
+  def test_path_with_prefix
+    header = Tar::Header.new(prefix: "path/to", name: "file")
+
+    assert_equal "path/to/file", header.path
+  end
+
+  def test_path_without_prefix
+    header = Tar::Header.new(prefix: nil, name: "file")
+
+    assert_equal "file", header.path
+  end
+
   private
 
   def header_data(checksum)
