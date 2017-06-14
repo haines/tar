@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "tar/error"
+require "tar/checksum"
 require "tar/schema"
 require "tar/ustar"
 
@@ -25,9 +25,8 @@ module Tar
       string :prefix, 155
     }
 
-    def initialize(values, checksum: nil)
+    def initialize(values)
       @values = values
-      check_checksum!(checksum) if checksum
     end
 
     SCHEMA.field_names.each do |name|
@@ -43,14 +42,13 @@ module Tar
     end
 
     def self.parse(record)
-      expected_checksum = SCHEMA.clear(record, :checksum).chars.sum(&:ord)
-      new(SCHEMA.parse(record), checksum: expected_checksum)
+      values = SCHEMA.parse(record)
+      Checksum.new(record).check!(values.fetch(:checksum))
+      new(values)
     end
 
-    private
-
-    def check_checksum!(expected_checksum)
-      raise ChecksumMismatch, "checksum mismatch at #{path.inspect}: expected #{expected_checksum}, got #{checksum}" unless checksum == expected_checksum
+    def self.clear_checksum(record)
+      SCHEMA.clear(record, :checksum)
     end
   end
 end
