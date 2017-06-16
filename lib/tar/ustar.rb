@@ -8,6 +8,8 @@ module Tar
 
     RECORD_SIZE = 512
 
+    EOF = "\0" * RECORD_SIZE * 2
+
     def read_record(io)
       record = io.read(RECORD_SIZE) || ""
 
@@ -22,6 +24,10 @@ module Tar
 
     def records_size(file_size)
       RECORD_SIZE * records(file_size)
+    end
+
+    def records_padding(file_size)
+      records_size(file_size) - file_size
     end
   end
 end

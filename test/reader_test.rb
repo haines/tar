@@ -100,7 +100,7 @@ class ReaderTest < Minitest::Test
       size +                        # size
       "13105143071 " +              # mtime
       checksum +                    # checksum
-      "0" +                         # typeflag
+      "0" +                         # type_flag
       "\0" * 100 +                  # link_name
       "ustar\0" +                   # magic
       "00" +                        # version

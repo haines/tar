@@ -12,5 +12,9 @@ module Tar
     def check!(expected)
       raise ChecksumMismatch.for(@record, expected: expected, actual: @value) unless @value == expected
     end
+
+    def to_i
+      @value
+    end
   end
 end

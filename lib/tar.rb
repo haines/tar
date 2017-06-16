@@ -2,3 +2,4 @@
 
 require "tar/version"
 require "tar/reader"
+require "tar/writer"

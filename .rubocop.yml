@@ -18,6 +18,9 @@ Metrics/MethodLength:
 Metrics/ModuleLength:
   Enabled: false
 
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
 Style/BlockDelimiters:
   EnforcedStyle: semantic
 
