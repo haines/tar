@@ -84,16 +84,76 @@ class HeaderTest < Minitest::Test
     assert_equal "#{'a' * 50}/#{'b' * 50}", header.path
   end
 
-  def test_create_requires_path
+  def test_path_is_required
     assert_raises ArgumentError do
       Tar::Header.create(size: 42)
     end
   end
 
-  def test_create_requires_size
+  def test_size_is_required
     assert_raises ArgumentError do
       Tar::Header.create(path: "path/to/file")
     end
+  end
+
+  def test_strings_must_be_ascii_compatible
+    assert_raises ArgumentError do
+      Tar::Header.create(path: "path/to/file", size: 42, uname: "tarāpuka")
+    end
+  end
+
+  def test_empty_strings_are_coerced_to_nil
+    header = Tar::Header.create(path: "path/to/file", size: 42, gname: "")
+
+    assert_nil header.gname
+  end
+
+  def test_fixed_width_strings_must_not_be_longer_than_field_size
+    assert_raises ArgumentError do
+      Tar::Header.create(path: "path/to/file", size: 42, link_name: "x" * 101)
+    end
+  end
+
+  def test_fixed_width_strings_may_fill_field
+    header = Tar::Header.create(path: "path/to/file", size: 42, link_name: "x" * 100)
+
+    assert_equal "x" * 100, header.link_name
+  end
+
+  def test_null_terminated_strings_are_truncated_to_fit
+    header = Tar::Header.create(path: "path/to/file", size: 42, uname: "x" * 100)
+
+    assert_equal "x" * 31, header.uname
+  end
+
+  def test_octal_fields_must_not_be_negative
+    assert_raises ArgumentError do
+      Tar::Header.create(path: "path/to/file", size: 42, dev_major: -1)
+    end
+  end
+
+  def test_octal_fields_must_not_overflow
+    assert_raises ArgumentError do
+      Tar::Header.create(path: "path/to/file", size: 42, dev_minor: 0o10000000)
+    end
+  end
+
+  def test_timestamps_must_not_be_negative
+    assert_raises ArgumentError do
+      Tar::Header.create(path: "path/to/file", size: 42, mtime: Time.utc(1969, 12, 31, 23, 59, 59))
+    end
+  end
+
+  def test_timestamps_may_be_zero
+    header = Tar::Header.create(path: "path/to/file", size: 42, mtime: Time.utc(1970, 1, 1, 0, 0, 0))
+
+    assert_equal Time.utc(1970, 1, 1, 0, 0, 0), header.mtime
+  end
+
+  def test_timestamps_have_fractional_seconds_truncated
+    header = Tar::Header.create(path: "path/to/file", size: 42, mtime: Time.utc(2017, 6, 17, 15, 40, 26.473))
+
+    assert_equal Time.utc(2017, 6, 17, 15, 40, 26), header.mtime
   end
 
   def test_parse

@@ -8,7 +8,7 @@ module Tar
 
     def initialize(**definition)
       @fields, = definition.reduce([{}, 0]) { |(fields, offset), (name, (type, size))|
-        [{ **fields, name => type.new(offset: offset, size: size) }, offset + size]
+        [{ **fields, name => type.new(name: name, offset: offset, size: size) }, offset + size]
       }
 
       @field_names = @fields.keys
@@ -65,23 +65,30 @@ module Tar
       end
 
       class Base
-        attr_reader :offset, :size, :pack_format, :unpack_format
+        attr_reader :name, :offset, :size
 
-        def initialize(offset:, size:, pack_format:, unpack_format:)
+        def initialize(name:, offset:, size:)
+          @name = name
           @offset = offset
           @size = size
-          @pack_format = pack_format
-          @unpack_format = unpack_format
         end
       end
 
-      class StringBase < Base
-        def initialize(size:, **args)
-          super(**args, size: size, unpack_format: "Z#{size}")
+      class FixedWidthString < Base
+        def pack_format
+          "a#{size}"
+        end
+
+        def unpack_format
+          "Z#{size}"
         end
 
         def coerce(value)
-          value.to_s unless value.nil? || value.to_s.empty?
+          return nil if value.nil? || value.to_s.empty?
+
+          check_length(value.to_s.encode(Encoding::US_ASCII))
+        rescue Encoding::UndefinedConversionError => error
+          raise ArgumentError, "invalid encoding in #{name}: cannot convert #{error.message}"
         end
 
         def format(value)
@@ -91,27 +98,49 @@ module Tar
         def parse(value)
           value unless value.empty?
         end
-      end
 
-      class FixedWidthString < StringBase
-        def initialize(size:, **args)
-          super(**args, size: size, pack_format: "a#{size}")
+        protected
+
+        def check_length(value)
+          raise ArgumentError, "#{name} too long (max length #{size}): #{value}" if value.length > size
+
+          value
         end
       end
 
-      class NullTerminatedString < StringBase
-        def initialize(size:, **args)
-          super(**args, size: size, pack_format: "a#{size - 1}x")
+      class NullTerminatedString < FixedWidthString
+        def pack_format
+          "a#{size - 1}x"
+        end
+
+        protected
+
+        def check_length(value)
+          value[0, size - 1]
         end
       end
 
       class OctalNumber < Base
-        def initialize(size:, **args)
-          super(**args, size: size, pack_format: "a#{size}", unpack_format: "A#{size}")
+        def initialize(*)
+          super
+          @max_value = 8**(size - 1) - 1
+        end
+
+        def pack_format
+          "a#{size}"
+        end
+
+        def unpack_format
+          "A#{size}"
         end
 
         def coerce(value)
-          Integer(value) unless value.nil?
+          return nil if value.nil?
+
+          Integer(value).tap { |integer|
+            raise ArgumentError, "#{name} cannot be negative: #{integer}" if integer.negative?
+            raise ArgumentError, "#{name} too big (max #{@max_value}): #{integer}" if integer > @max_value
+          }
         end
 
         def format(value)
@@ -127,7 +156,7 @@ module Tar
 
       class Timestamp < OctalNumber
         def coerce(value)
-          Time.at(value) unless value.nil?
+          Time.at(super) unless value.nil?
         end
 
         def parse(value)

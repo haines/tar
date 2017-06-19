@@ -21,6 +21,9 @@ Metrics/ModuleLength:
 Metrics/ParameterLists:
   CountKeywordArgs: false
 
+Naming/RescuedExceptionsVariableName:
+  PreferredName: error
+
 Style/BlockDelimiters:
   EnforcedStyle: semantic
 

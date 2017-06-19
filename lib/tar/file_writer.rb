@@ -6,13 +6,13 @@ module Tar
   class FileWriter
     attr_reader :header
 
-    def initialize(header, io)
-      @header = header
+    def initialize(io, size:)
       @io = io
+      @size = size
     end
 
     def close
-      @io.write("\0" * USTAR.records_padding(header.size))
+      @io.write("\0" * USTAR.records_padding(@size))
     end
 
     def write(data)

@@ -100,7 +100,7 @@ module Tar
       return [nil, path] if path.length <= SCHEMA.field_size(:name)
 
       split_at = path.index("/", -SCHEMA.field_size(:name) - 1)
-      raise ArgumentError, "file path too long" if split_at.nil? || split_at > SCHEMA.field_size(:prefix)
+      raise ArgumentError, "path too long: #{path}" if split_at.nil? || split_at > SCHEMA.field_size(:prefix)
 
       [path[0, split_at], path[(split_at + 1)..-1]]
     end

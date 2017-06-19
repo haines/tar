@@ -14,11 +14,11 @@ module Tar
       @io.write USTAR::EOF
     end
 
-    def add(path:, size:)
-      header = Header.create(path: path, size: size)
+    def add(**header_values)
+      header = Header.create(**header_values)
       @io.write header
 
-      writer = FileWriter.new(header, @io)
+      writer = FileWriter.new(@io, size: header.size)
       yield writer
       writer.close
     end
