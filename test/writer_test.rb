@@ -98,6 +98,37 @@ class WriterTest < Minitest::Test
     assert_equal "\0" * 1024, io.string[2048..-1]
   end
 
+  def test_closed_after_close
+    io = new_io
+    writer = Tar::Writer.new(io)
+
+    writer.close
+
+    assert writer.closed?
+  end
+
+  def test_cannot_add_files_after_close
+    io = new_io
+    writer = Tar::Writer.new(io)
+
+    writer.close
+
+    assert_raises IOError do
+      writer.add path: "path/to/file", size: 42 do
+        flunk "Expected block not to be called."
+      end
+    end
+  end
+
+  def test_closes_automatically_if_block_given_to_new
+    io = new_io
+
+    writer = Tar::Writer.new(io) { |w| w.add path: "path/to/file", size: 0 }
+
+    assert writer.closed?
+    assert_equal 1536, io.string.length
+  end
+
   private
 
   def new_io
