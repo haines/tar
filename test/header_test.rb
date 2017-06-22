@@ -90,9 +90,21 @@ class HeaderTest < Minitest::Test
     end
   end
 
+  def test_path_may_not_be_nil
+    assert_raises ArgumentError do
+      Tar::Header.create(path: nil, size: 42)
+    end
+  end
+
   def test_size_is_required
     assert_raises ArgumentError do
       Tar::Header.create(path: "path/to/file")
+    end
+  end
+
+  def test_size_may_not_be_nil
+    assert_raises ArgumentError do
+      Tar::Header.create(path: "path/to/file", size: nil)
     end
   end
 

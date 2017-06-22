@@ -34,12 +34,19 @@ module Tar
 
       check_not_closed!
 
-      header = Header.create(size: size, **header_values)
-      @io.write header
+      start_pos = @io.pos
+      write_header size: size, **header_values
 
-      file = FileWriter.new(@io, size: header.size)
+      file = FileWriter.new(@io, size: size)
       block.call(file)
       file.close
+
+      return if size
+
+      end_pos = @io.pos
+      @io.seek start_pos
+      write_header size: file.bytes_written, **header_values
+      @io.seek end_pos
     end
 
     private
@@ -52,6 +59,14 @@ module Tar
       yield self
     ensure
       close
+    end
+
+    def write_header(size:, **header_values)
+      if size
+        @io.write Header.create(size: size, **header_values)
+      else
+        @io.write "\0" * USTAR::RECORD_SIZE
+      end
     end
   end
 end

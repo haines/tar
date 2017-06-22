@@ -162,6 +162,25 @@ class WriterTest < Minitest::Test
     end
   end
 
+  def test_size_may_be_omitted_with_block
+    io = new_io
+
+    Tar::Writer.new io do |writer|
+      writer.add path: "path/to/first" do |file|
+        file.write "tahi"
+      end
+      writer.add path: "path/to/second" do |file|
+        file.write "rua"
+      end
+    end
+
+    assert_equal "00000000004\0", io.string[124, 12]
+    assert_equal "tahi", io.string[512, 4]
+
+    assert_equal "00000000003\0", io.string[1148, 12]
+    assert_equal "rua", io.string[1536, 3]
+  end
+
   private
 
   def new_io

@@ -62,6 +62,9 @@ module Tar
       dev_major: nil,
       dev_minor: nil
     )
+      raise ArgumentError, "path may not be nil" if path.nil?
+      raise ArgumentError, "size may not be nil" if size.nil?
+
       prefix, name = split_path(path)
 
       values = Header::SCHEMA.coerce(

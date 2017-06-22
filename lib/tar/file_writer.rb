@@ -4,19 +4,20 @@ require "tar/ustar"
 
 module Tar
   class FileWriter
-    attr_reader :header
+    attr_reader :bytes_written
 
     def initialize(io, size:)
       @io = io
       @size = size
+      @bytes_written = 0
     end
 
     def close
-      @io.write("\0" * USTAR.records_padding(@size))
+      @io.write("\0" * USTAR.records_padding(@bytes_written))
     end
 
     def write(data)
-      @io.write(data)
+      @bytes_written += @io.write(data)
     end
   end
 end
