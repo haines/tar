@@ -107,6 +107,18 @@ class WriterTest < Minitest::Test
     assert writer.closed?
   end
 
+  def test_size_is_zero_when_no_block_given
+    io = new_io
+    writer = Tar::Writer.new(io)
+
+    writer.add path: "empty/file"
+
+    writer.close
+
+    assert_equal "00000000000\0", io.string[124, 12]
+    assert_equal "\0" * 1024, io.string[512..-1]
+  end
+
   def test_cannot_add_files_after_close
     io = new_io
     writer = Tar::Writer.new(io)
@@ -123,15 +135,36 @@ class WriterTest < Minitest::Test
   def test_closes_automatically_if_block_given_to_new
     io = new_io
 
-    writer = Tar::Writer.new(io) { |w| w.add path: "path/to/file", size: 0 }
+    writer = Tar::Writer.new(io) { |w| w.add path: "path/to/file" }
 
     assert writer.closed?
     assert_equal 1536, io.string.length
   end
 
+  def test_file_contents_may_be_passed_as_a_string
+    io = new_io
+
+    Tar::Writer.new io do |writer|
+      writer.add path: "path/to/file", contents: "kāmana"
+    end
+
+    assert_equal "00000000007\0", io.string[124, 12]
+    assert_equal "k\xC4\x81mana".b, io.string[512, 7]
+  end
+
+  def test_block_and_contents_string_are_mutually_exclusive
+    assert_raises ArgumentError do
+      Tar::Writer.new new_io do |writer|
+        writer.add path: "path/to/file", contents: "matuku" do
+          flunk "Expected block not to be called."
+        end
+      end
+    end
+  end
+
   private
 
   def new_io
-    StringIO.new("".dup.force_encoding("binary"))
+    StringIO.new("".b)
   end
 end

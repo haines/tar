@@ -21,15 +21,25 @@ module Tar
       @closed || @io.closed?
     end
 
-    def add(**header_values)
+    def add(contents: nil, size: nil, **header_values, &block)
+      if contents
+        raise ArgumentError, "expected only one of contents keyword and block, received both" if block_given?
+
+        block = ->(file) { file.write contents }
+        size = contents.bytesize
+      elsif !block_given?
+        block = ->(*) {}
+        size = 0
+      end
+
       check_not_closed!
 
-      header = Header.create(**header_values)
+      header = Header.create(size: size, **header_values)
       @io.write header
 
-      writer = FileWriter.new(@io, size: header.size)
-      yield writer if block_given?
-      writer.close
+      file = FileWriter.new(@io, size: header.size)
+      block.call(file)
+      file.close
     end
 
     private
