@@ -3,7 +3,14 @@ AllCops:
   Exclude:
     - bin/rake
 
+Lint/NestedMethodDefinition:
+  Exclude:
+    - test/file_reader_test.rb
+
 Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
   Enabled: false
 
 Metrics/ClassLength:

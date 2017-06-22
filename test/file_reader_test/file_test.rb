@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
-require_relative "define_tests"
+require_relative "../file_reader_test"
 require "tempfile"
 
 module FileReaderTest
-  define_tests "File" do |contents|
-    Tempfile.new("file_reader_test").tap { |file|
-      file.write "______#{contents}______"
-      file.pos = 6
-    }
+  test_underlying "File" do
+    def io_containing(contents)
+      Tempfile.new("file_reader_test").tap { |file|
+        file.write "______#{contents}______"
+        file.pos = 6
+      }
+    end
   end
 
   class FileTtyTest

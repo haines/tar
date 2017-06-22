@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
-require_relative "define_tests"
+require_relative "../file_reader_test"
 
 module FileReaderTest
-  define_tests "StringIO" do |contents|
-    StringIO.new(+"______#{contents}______").tap { |io| io.pos = 6 }
+  test_underlying "StringIO" do
+    def io_containing(contents)
+      StringIO.new(+"______#{contents}______").tap { |io| io.pos = 6 }
+    end
   end
 end

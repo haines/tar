@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
-require_relative "define_tests"
+require_relative "../file_reader_test"
 
 module FileReaderTest
-  define_tests "Pipe", unsupported: ["seek"] do |contents|
-    reader, writer = IO.pipe
+  test_underlying "Pipe", unsupported: ["seek"] do
+    def io_containing(contents)
+      reader, writer = IO.pipe
 
-    writer.write "______#{contents}______"
-    writer.close
+      writer.write "______#{contents}______"
+      writer.close
 
-    reader.read 6
-    reader
+      reader.read 6
+      reader
+    end
   end
 
   class PipeReadpartialTest
