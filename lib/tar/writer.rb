@@ -2,10 +2,13 @@
 
 require "tar/file_writer"
 require "tar/header"
+require "tar/seekable"
 require "tar/ustar"
 
 module Tar
   class Writer
+    include Seekable
+
     def initialize(io, &block)
       @io = io
       @closed = false
@@ -65,6 +68,7 @@ module Tar
       if size
         @io.write Header.create(size: size, **header_values)
       else
+        check_seekable! "can't write header without size (seek not supported by #{@io})"
         @io.write "\0" * USTAR::RECORD_SIZE
       end
     end

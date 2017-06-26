@@ -5,11 +5,11 @@ require "tempfile"
 
 module WriterTest
   test_underlying "File" do
-    def setup
-      @io = Tempfile.new("writer_test").tap { |file| file.sync = true }
+    def new_io
+      Tempfile.new("writer_test")
     end
 
-    def written
+    def read_back
       File.read(@io.path).b
     end
   end

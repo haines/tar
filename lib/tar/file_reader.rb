@@ -3,11 +3,13 @@
 require "char_size"
 require "tar/file_reader/line"
 require "tar/polyfills"
+require "tar/seekable"
 require "tar/ustar"
 
 module Tar
   class FileReader
     include Enumerable
+    include Seekable
     using Polyfills
 
     attr_reader :header
@@ -329,23 +331,6 @@ module Tar
 
     def check_not_eof!
       raise EOFError, "end of file reached" if eof?
-    end
-
-    def seekable?
-      return @seekable if defined?(@seekable)
-
-      @seekable = @io.respond_to?(:seek) && !pipe?
-    end
-
-    def pipe?
-      @io.pos
-      false
-    rescue Errno::EPIPE, Errno::ESPIPE
-      true
-    end
-
-    def check_seekable!
-      raise SeekNotSupported, "seek not supported by #{@io}" unless seekable?
     end
 
     def walk_bom_tree((tree, encoding))
