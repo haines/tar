@@ -35,21 +35,7 @@ module Tar
         size = 0
       end
 
-      check_not_closed!
-
-      start_pos = @io.pos
-      write_header size: size, **header_values
-
-      file = FileWriter.new(@io, size: size)
-      block.call(file)
-      file.close
-
-      return if size
-
-      end_pos = @io.pos
-      @io.seek start_pos
-      write_header size: file.bytes_written, **header_values
-      @io.seek end_pos
+      write size: size, **header_values, &block
     end
 
     private
@@ -64,13 +50,46 @@ module Tar
       close
     end
 
-    def write_header(size:, **header_values)
+    def write(size:, **header_values, &block)
+      check_not_closed!
+
       if size
-        @io.write Header.create(size: size, **header_values)
+        write_with_size(size: size, **header_values, &block)
       else
-        check_seekable! "can't write header without size (seek not supported by #{@io})"
-        @io.write "\0" * USTAR::RECORD_SIZE
+        write_without_size(**header_values, &block)
       end
+    end
+
+    def write_with_size(size:, **header_values, &block)
+      write_header(size: size, **header_values)
+      write_file(size: size, &block)
+    end
+
+    def write_without_size(**header_values, &block)
+      check_seekable! message: "can't write header without size (seek not supported by #{@io})"
+
+      start_pos = @io.pos
+      write_placeholder
+      bytes_written = write_file(&block)
+      end_pos = @io.pos
+      @io.seek start_pos
+      write_header size: bytes_written, **header_values
+      @io.seek end_pos
+    end
+
+    def write_header(**values)
+      @io.write Header.create(**values)
+    end
+
+    def write_placeholder
+      @io.write "\0" * USTAR::RECORD_SIZE
+    end
+
+    def write_file(size: nil)
+      file = FileWriter.new(@io, size: size)
+      yield file
+      file.close
+      file.bytes_written
     end
   end
 end

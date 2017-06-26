@@ -17,7 +17,7 @@ module Tar
       true
     end
 
-    def check_seekable!(message = "seek not supported by #{@io}")
+    def check_seekable!(message: "seek not supported by #{@io}")
       raise SeekNotSupported, message unless seekable?
     end
   end
