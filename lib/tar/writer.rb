@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "tar/file_writer"
+require "tar/file/writer"
 require "tar/header"
 require "tar/seekable"
 require "tar/ustar"
@@ -86,7 +86,7 @@ module Tar
     end
 
     def write_file(size: nil)
-      file = FileWriter.new(@io, size: size)
+      file = File::Writer.new(io: @io, size: size)
       yield file
       file.close
       file.bytes_written

@@ -2,7 +2,7 @@
 
 require_relative "define_tests"
 require_relative "test_helper"
-require "tar/file_reader"
+require "tar/file/reader"
 
 module FileReaderTest
   extend DefineTests
@@ -30,7 +30,7 @@ module FileReaderTest
       end
 
       def file_containing(contents, **options)
-        Tar::FileReader.new(header(size: contents.bytesize), io_containing(contents), **options)
+        Tar::File::Reader.new(io: io_containing(contents), header: header(size: contents.bytesize), **options)
       end
 
       def new_file

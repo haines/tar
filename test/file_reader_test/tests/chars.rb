@@ -14,7 +14,7 @@ module FileReaderTest
       assert_equal "i", enumerator.next
 
       assert_includes err, "warning: "
-      assert_includes err, "Tar::FileReader#chars"
+      assert_includes err, "Tar::File::Reader#chars"
       assert_includes err, "deprecated"
       assert_includes err, "#each_char"
     end

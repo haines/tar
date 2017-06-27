@@ -132,11 +132,10 @@ module FileReaderTest
       end
     end
 
-    def test_readline_with_too_many_arguments_raises_argument_error_with_correct_backtrace
-      exception = assert_raises(ArgumentError) {
+    def test_readline_with_too_many_arguments_raises_argument_error
+      assert_raises(ArgumentError) do
         @file.readline("\n", 42, "!")
-      }
-      assert_includes exception.backtrace.first, "in `readline'"
+      end
     end
   end
 end

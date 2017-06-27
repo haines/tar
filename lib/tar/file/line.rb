@@ -3,7 +3,7 @@
 require "English"
 
 module Tar
-  class FileReader
+  module File
     class Line
       def initialize(file, *args)
         @file = file
@@ -19,7 +19,7 @@ module Tar
           extract_separator(args.first)
           extract_limit(args.last)
         else
-          raise ArgumentError, "wrong number of arguments (given #{args.size}, expected 0..2)", drop_internal_frames(caller)
+          raise ArgumentError, "wrong number of arguments (given #{args.size}, expected 0..2)"
         end
       end
 
@@ -53,10 +53,6 @@ module Tar
 
       def encoding
         @file.internal_encoding || @file.external_encoding
-      end
-
-      def drop_internal_frames(stacktrace)
-        stacktrace.drop_while { |frame| frame.include?("in `new'") }
       end
 
       def use_default_separator
@@ -114,6 +110,5 @@ module Tar
         @limit && line.bytesize >= @limit
       end
     end
-    private_constant :Line
   end
 end

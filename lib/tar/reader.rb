@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "tar/file_reader"
+require "tar/file/reader"
 require "tar/header"
 require "tar/header_reader"
 
@@ -21,7 +21,7 @@ module Tar
         header = @header_reader.read
         break if header.nil?
 
-        file_reader = FileReader.new(header, @io, **@encoding_options)
+        file_reader = File::Reader.new(io: @io, header: header, **@encoding_options)
         yield file_reader
         file_reader.skip_to_next_record
       end
