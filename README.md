@@ -2,8 +2,8 @@
 
 [![Latest version](https://img.shields.io/gem/v/tar.svg?style=flat-square)](https://rubygems.org/gems/tar)&nbsp;
 [![Travis CI status](https://img.shields.io/travis/haines/tar.svg?style=flat-square)](https://travis-ci.org/haines/tar)&nbsp;
-[![Code Climate GPA](https://img.shields.io/codeclimate/github/haines/tar.svg?style=flat-square)](https://codeclimate.com/github/haines/tar)&nbsp;
-[![Test coverage](https://img.shields.io/codeclimate/coverage/github/haines/tar.svg?style=flat-square)](https://codeclimate.com/github/haines/tar/coverage)&nbsp;
+[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/haines/tar?style=flat-square)](https://codeclimate.com/github/haines/tar)&nbsp;
+[![Code Climate coverage](https://img.shields.io/codeclimate/coverage/haines/tar?style=flat-square)](https://codeclimate.com/github/haines/tar/code)&nbsp;
 
 Read and write tar files with Ruby.
 
