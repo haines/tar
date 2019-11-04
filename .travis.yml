@@ -6,6 +6,9 @@ rvm:
   - 2.3.8
 sudo: false
 
+before_install:
+  - gem install bundler
+
 before_script:
   - curl -fsSL https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 -o code-climate-test-reporter
   - chmod +x code-climate-test-reporter
