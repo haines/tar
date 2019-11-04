@@ -1,13 +1,10 @@
 # frozen_string_literal: true
 
 require "English"
-require "tar/backports"
 
 module Tar
   class FileReader
     class Line
-      using Backports
-
       def initialize(file, *args)
         @file = file
         @skip = nil
