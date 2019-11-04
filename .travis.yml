@@ -1,8 +1,21 @@
 language: ruby
 rvm:
-  - 2.4.1
-  - 2.3.4
-  - 2.2.7
+  - 2.6.5
+  - 2.5.7
+  - 2.4.9
+  - 2.3.8
 sudo: false
 
-after_success: '[[ "$TRAVIS_JOB_NUMBER" == *.1 ]] && bundle exec codeclimate-test-reporter'
+before_install:
+  - gem install bundler
+
+before_script:
+  - curl -fsSL https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 -o code-climate-test-reporter
+  - chmod +x code-climate-test-reporter
+  - ./code-climate-test-reporter before-build
+
+after_script:
+  - |
+    if [[ "$TRAVIS_JOB_NUMBER" = *.1 ]]; then
+      ./code-climate-test-reporter after-build --exit-code "$TRAVIS_TEST_RESULT"
+    fi
