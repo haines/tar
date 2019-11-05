@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
-require "tar/backports"
 require "tar/error"
 require "tar/schema"
 require "tar/ustar"
 
 module Tar
   class Header
-    using Backports
-
     SCHEMA = Schema.new {
       string :name, 100
       octal_number :mode, 8

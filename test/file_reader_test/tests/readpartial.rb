@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
-require "tar/backports"
-
 module FileReaderTest
   module Readpartial
-    using Tar::Backports
-
     def test_readpartial
       file = file_containing("moa")
 

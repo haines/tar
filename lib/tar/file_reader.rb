@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "char_size"
-require "tar/backports"
 require "tar/file_reader/line"
 require "tar/polyfills"
 require "tar/ustar"
@@ -9,7 +8,6 @@ require "tar/ustar"
 module Tar
   class FileReader
     include Enumerable
-    using Backports
     using Polyfills
 
     attr_reader :header
@@ -78,7 +76,7 @@ module Tar
     def readpartial(max_length, buffer = nil)
       check_not_closed!
 
-      data = @io.readpartial(truncate(max_length), buffer)
+      data = @io.readpartial(truncate(max_length), *[buffer].compact)
       @pos += data.bytesize
       data.force_encoding(Encoding::BINARY)
     end
@@ -342,7 +340,7 @@ module Tar
     def pipe?
       @io.pos
       false
-    rescue Errno::ESPIPE
+    rescue Errno::EPIPE, Errno::ESPIPE
       true
     end
 
