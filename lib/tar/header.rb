@@ -41,6 +41,7 @@ module Tar
 
     def path
       return name if prefix.nil?
+
       "#{prefix}/#{name}"
     end
 

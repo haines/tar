@@ -111,9 +111,7 @@ module Tar
 
       external_encoding, internal_encoding = extract_encodings(external_encoding, *internal_encoding)
 
-      if parse_bom?(external_encoding)
-        external_encoding = parse_bom || external_encoding[4..-1]
-      end
+      external_encoding = parse_bom || external_encoding[4..-1] if parse_bom?(external_encoding)
 
       @external_encoding = find_encoding(external_encoding, if_nil: Encoding.default_external, if_unsupported: Encoding.default_external)
       @internal_encoding = find_encoding(internal_encoding, if_nil: nil, if_unsupported: Encoding.default_internal)
@@ -151,6 +149,7 @@ module Tar
     def getbyte
       check_not_closed!
       return nil if eof?
+
       @pos += 1
       @io.getbyte
     end
@@ -170,6 +169,7 @@ module Tar
     def each_byte
       check_not_closed!
       return to_enum(__method__) unless block_given?
+
       yield getbyte until eof?
     end
 
@@ -190,6 +190,7 @@ module Tar
 
         char.force_encoding external_encoding
         return encode(char) if char.valid_encoding?
+
         char.force_encoding Encoding::BINARY
       end
 
@@ -213,6 +214,7 @@ module Tar
     def each_char
       check_not_closed!
       return to_enum(__method__) unless block_given?
+
       yield getc until eof?
     end
 
@@ -224,6 +226,7 @@ module Tar
     def each_codepoint
       check_not_closed!
       return to_enum(__method__) unless block_given?
+
       each_char do |char|
         char.each_codepoint do |codepoint|
           yield codepoint
@@ -240,6 +243,7 @@ module Tar
       line = Line.new(self, *args)
       check_not_closed!
       return nil if eof?
+
       line.read
     end
 
@@ -254,6 +258,7 @@ module Tar
       line = Line.new(self, *args)
       check_not_closed!
       return to_enum(__method__, *args) unless block_given?
+
       yield line.read until eof?
     end
     alias each each_line
@@ -276,6 +281,7 @@ module Tar
     def extract_encodings(external_encoding, *internal_encoding)
       raise ArgumentError, "wrong number of arguments (given #{internal_encoding.size + 1}, expected 1..2)" if internal_encoding.size > 1
       return [external_encoding, *internal_encoding] if external_encoding.nil? || external_encoding.is_a?(Encoding) || !internal_encoding.empty?
+
       external_encoding.split(":", 2)
     end
 
@@ -285,11 +291,13 @@ module Tar
 
     def parse_bom
       return nil unless pos.zero?
+
       walk_bom_tree(BOM_TREE)
     end
 
     def find_encoding(encoding, if_nil:, if_unsupported:)
       return if_nil if encoding.nil? || encoding == ""
+
       Encoding.find(encoding)
     rescue ArgumentError
       warn "warning: encoding #{encoding} unsupported, defaulting to #{if_unsupported}"
@@ -327,12 +335,15 @@ module Tar
 
     def seekable?
       return @seekable if defined?(@seekable)
-      @seekable = @io.respond_to?(:seek) && begin
-        @io.pos
-        true
-      rescue Errno::ESPIPE
-        false
-      end
+
+      @seekable = @io.respond_to?(:seek) && !pipe?
+    end
+
+    def pipe?
+      @io.pos
+      false
+    rescue Errno::ESPIPE
+      true
     end
 
     def check_seekable!

@@ -31,9 +31,9 @@ class ReaderTest < Minitest::Test
 
   def test_read_multiple_file_archive
     expected_files = {
-      "path/to/first"  => "tahi",
+      "path/to/first" => "tahi",
       "path/to/second" => "rua",
-      "path/to/third"  => "toru"
+      "path/to/third" => "toru"
     }
     archive = archive_of(expected_files)
 
@@ -93,8 +93,8 @@ class ReaderTest < Minitest::Test
   end
 
   def header(path:, size:)
-    size = format("%011o ", size)
-    checksum = format("%07o\0", 4344 + (path + size).chars.sum(&:ord))
+    size = format("%<size>011o ", size: size)
+    checksum = format("%<checksum>07o\0", checksum: 4344 + (path + size).chars.sum(&:ord))
 
     path.ljust(100, "\0") +         # name
       "000644 \0" +                 # mode

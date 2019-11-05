@@ -31,10 +31,10 @@ class USTARTest < Minitest::Test
 
   def test_records
     {
-      0    => 0,
-      1    => 1,
-      512  => 1,
-      513  => 2,
+      0 => 0,
+      1 => 1,
+      512 => 1,
+      513 => 2,
       1024 => 2,
       9000 => 18
     }.each do |file_size, records|
@@ -44,10 +44,10 @@ class USTARTest < Minitest::Test
 
   def test_records_size
     {
-      0    => 0,
-      1    => 512,
-      512  => 512,
-      513  => 1024,
+      0 => 0,
+      1 => 512,
+      512 => 512,
+      513 => 1024,
       1024 => 1024,
       9000 => 9216
     }.each do |file_size, records_size|
