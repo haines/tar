@@ -76,7 +76,7 @@ module Tar
     def readpartial(max_length, buffer = nil)
       check_not_closed!
 
-      data = @io.readpartial(truncate(max_length), buffer)
+      data = @io.readpartial(truncate(max_length), *[buffer].compact)
       @pos += data.bytesize
       data.force_encoding(Encoding::BINARY)
     end
@@ -340,7 +340,7 @@ module Tar
     def pipe?
       @io.pos
       false
-    rescue Errno::ESPIPE
+    rescue Errno::EPIPE, Errno::ESPIPE
       true
     end
 
