@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 require_relative "test_helper"
-require "tar/backports"
 require "tar/reader"
 
 class ReaderTest < Minitest::Test
-  using Tar::Backports
-
   def test_read_empty_archive
     archive = empty_archive
 

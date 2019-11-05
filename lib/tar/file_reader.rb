@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "char_size"
-require "tar/backports"
 require "tar/file_reader/line"
 require "tar/polyfills"
 require "tar/ustar"
@@ -9,7 +8,6 @@ require "tar/ustar"
 module Tar
   class FileReader
     include Enumerable
-    using Backports
     using Polyfills
 
     attr_reader :header

@@ -1,5 +1,5 @@
 AllCops:
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.4
   Exclude:
     - bin/rake
 
@@ -27,10 +27,6 @@ Style/Documentation:
 Style/HashSyntax:
   Exclude:
     - Rakefile
-
-Style/NumericPredicate:
-  Exclude:
-    - lib/tar/backports.rb
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

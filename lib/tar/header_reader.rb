@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
-require "tar/backports"
 require "tar/error"
 require "tar/header"
 require "tar/ustar"
 
 module Tar
   class HeaderReader
-    using Backports
-
     def initialize(io)
       @io = io
     end

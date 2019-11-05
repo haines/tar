@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
-require "tar/backports"
-
 module FileReaderTest
   module ReadToBufferUnsupported
-    using Tar::Backports
-
     def test_cannot_read_to_buffer_without_internal_encoding
       file = file_containing("k\xE2rearea", external_encoding: "ISO-8859-13")
       buffer = +"this data will not be overwritten"
