@@ -11,6 +11,14 @@ module FileReaderTest
       assert_equal "ahē", file.read
     end
 
+    def test_cannot_seek_to_absolute_pos_beyond_start_of_file
+      file = file_containing("kūkū")
+
+      assert_raises Errno::EINVAL do
+        file.seek(-1)
+      end
+    end
+
     def test_explicitly_seek_to_absolute_pos_with_constant
       file = file_containing("kākāriki")
 
@@ -49,6 +57,15 @@ module FileReaderTest
       assert_equal "keko", file.read
     end
 
+    def test_cannot_seek_to_relative_offset_beyond_start_of_file
+      file = file_containing("kūkūpa")
+      file.read 1
+
+      assert_raises Errno::EINVAL do
+        file.seek(-2, :CUR)
+      end
+    end
+
     def test_seek_from_end_with_constant
       file = file_containing("tītipounamu")
 
@@ -65,6 +82,14 @@ module FileReaderTest
 
       assert_equal 4, file.pos
       assert_equal "ā", file.read
+    end
+
+    def test_cannot_seek_from_end_beyond_start_of_file
+      file = file_containing("momohua")
+
+      assert_raises Errno::EINVAL do
+        file.seek(-8, :END)
+      end
     end
 
     def test_seek_with_unknown_mode

@@ -71,9 +71,13 @@ module Tar
       def seek(amount, mode = IO::SEEK_SET)
         check_seekable!
         check_not_closed!
+
         offset = relativize(amount, mode)
+        new_pos = @pos + offset
+        raise Errno::EINVAL, "attempted to seek beyond the start of the file" if new_pos.negative?
+
         @io.seek offset, IO::SEEK_CUR
-        @pos += offset
+        @pos = new_pos
       end
 
       def rewind
