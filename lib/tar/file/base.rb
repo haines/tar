@@ -78,7 +78,6 @@ module Tar
 
       def rewind
         seek 0
-        @lineno = 0
       end
 
       protected
