@@ -45,10 +45,6 @@ module FileReaderTest
         new_file.tap(&:read)
       end
 
-      def binary(string)
-        string.b
-      end
-
       def iso_8859_13(string)
         string.dup.force_encoding("ISO-8859-13")
       end

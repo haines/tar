@@ -6,7 +6,7 @@ require "zlib"
 module WriterTest
   test_underlying "GzipWriter", unsupported: ["add_without_size"] do
     def setup
-      @string_io = StringIO.new
+      @string_io = StringIO.new("".b)
       @io = Zlib::GzipWriter.new(@string_io)
     end
 

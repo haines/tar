@@ -21,7 +21,7 @@ module FileReaderTest
       file = Tar::File::Reader.new(io: reader, header: header(size: 42))
       writer.write "pātātai"
 
-      assert_equal binary("p\xC4\x81t\xC4\x81tai"), file.readpartial(42)
+      assert_equal "p\xC4\x81t\xC4\x81tai".b, file.readpartial(42)
     end
   end
 end

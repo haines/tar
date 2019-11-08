@@ -26,7 +26,7 @@ module FileReaderTest
 
       file.read 5, buffer
 
-      assert_equal binary("p\xC5\xABta"), buffer
+      assert_equal "p\xC5\xABta".b, buffer
     end
   end
 end
