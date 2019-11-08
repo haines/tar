@@ -9,10 +9,6 @@ module WriterTest
 
   def self.test_underlying(*args, &block)
     define_tests "writer_test", *args do
-      def setup
-        @io = new_io
-      end
-
       def teardown
         @io.close unless @io.closed?
       end

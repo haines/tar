@@ -5,12 +5,12 @@ require "tempfile"
 
 module WriterTest
   test_underlying "File" do
-    def new_io
-      Tempfile.new("writer_test")
+    def setup
+      @io = Tempfile.new("writer_test")
     end
 
     def read_back
-      File.read(@io.path).b
+      File.read(@io.path, encoding: "binary")
     end
   end
 end
