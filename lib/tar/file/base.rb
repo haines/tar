@@ -7,6 +7,8 @@ module Tar
     class Base
       include Seekable
 
+      attr_reader :size
+
       def initialize(io:, size:, external_encoding: Encoding.default_external, internal_encoding: Encoding.default_internal, **encoding_options)
         @io = io
         @size = size
@@ -103,7 +105,7 @@ module Tar
         case mode
         when :CUR, IO::SEEK_CUR then amount
         when :SET, IO::SEEK_SET then amount - @pos
-        when :END, IO::SEEK_END then @size + amount - @pos
+        when :END, IO::SEEK_END then size + amount - @pos
         else raise ArgumentError, "unknown seek mode #{mode.inspect}, expected :CUR, :END, or :SET (or IO::SEEK_*)"
         end
       end

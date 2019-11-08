@@ -70,10 +70,10 @@ module Tar
 
       start_pos = @io.pos
       write_placeholder
-      bytes_written = write_file(&block)
+      size = write_file(&block)
       end_pos = @io.pos
       @io.seek start_pos
-      write_header size: bytes_written, **header_values
+      write_header size: size, **header_values
       @io.seek end_pos
     end
 
@@ -89,7 +89,7 @@ module Tar
       file = File::Writer.new(io: @io, size: size)
       yield file
       file.close
-      file.bytes_written
+      file.size
     end
   end
 end

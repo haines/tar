@@ -6,6 +6,7 @@ AllCops:
 Lint/NestedMethodDefinition:
   Exclude:
     - test/file_reader_test.rb
+    - test/file_writer_test.rb
     - test/writer_test.rb
 
 Metrics/AbcSize:
