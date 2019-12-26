@@ -4,7 +4,7 @@ module FileReaderTest
   module SkipToNextRecord
     def test_skip_to_next_record
       io = io_containing("ruru".ljust(512, "\0") + "huia")
-      file = Tar::FileReader.new(header(size: 4), io)
+      file = Tar::File::Reader.new(io: io, header: header(size: 4))
       file.read
 
       file.skip_to_next_record

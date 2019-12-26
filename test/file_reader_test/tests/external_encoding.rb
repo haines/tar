@@ -4,20 +4,20 @@ module FileReaderTest
   module ExternalEncoding
     def test_a_new_file_has_default_external_encoding
       file = with_default_encoding(external: Encoding::ISO_8859_1) {
-        Tar::FileReader.new(any_header, any_io)
+        Tar::File::Reader.new(io: any_io, header: any_header)
       }
 
       assert_equal Encoding::ISO_8859_1, file.external_encoding
     end
 
     def test_a_new_file_has_external_encoding_from_given_name
-      file = Tar::FileReader.new(any_header, any_io, external_encoding: "ISO-8859-1")
+      file = Tar::File::Reader.new(io: any_io, header: any_header, external_encoding: "ISO-8859-1")
 
       assert_equal Encoding::ISO_8859_1, file.external_encoding
     end
 
     def test_a_new_file_has_external_encoding_from_given_encoding
-      file = Tar::FileReader.new(any_header, any_io, external_encoding: Encoding::ISO_8859_1)
+      file = Tar::File::Reader.new(io: any_io, header: any_header, external_encoding: Encoding::ISO_8859_1)
 
       assert_equal Encoding::ISO_8859_1, file.external_encoding
     end

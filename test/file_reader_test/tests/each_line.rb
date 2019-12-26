@@ -164,14 +164,12 @@ module FileReaderTest
       end
     end
 
-    def test_each_line_with_too_many_arguments_raises_argument_error_with_correct_backtrace
-      exception = assert_raises(ArgumentError) {
+    def test_each_line_with_too_many_arguments_raises_argument_error
+      assert_raises(ArgumentError) do
         @file.each_line "\n", 42, "!" do
           flunk "Expected block not to be called."
         end
-      }
-
-      assert_includes exception.backtrace.first, "in `each_line'"
+      end
     end
 
     def test_each_line_returns_enumerator_when_no_block_given

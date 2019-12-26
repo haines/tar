@@ -12,7 +12,7 @@ module FileReaderTest
 
     def test_closed_if_underlying_io_closed
       io = any_io
-      file = Tar::FileReader.new(any_header, io)
+      file = Tar::File::Reader.new(io: io, header: any_header)
 
       io.close
 

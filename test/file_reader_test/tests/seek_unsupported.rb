@@ -84,7 +84,7 @@ module FileReaderTest
 
     def test_cannot_set_pos_when_closed
       assert_raises Tar::SeekNotSupported do
-        closed_file.seek 9000
+        closed_file.pos = 9000
       end
     end
 

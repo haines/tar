@@ -1,33 +1,35 @@
 # frozen_string_literal: true
 
-require "tar/error"
+require "tar/checksum"
 require "tar/schema"
 require "tar/ustar"
 
 module Tar
   class Header
-    SCHEMA = Schema.new {
-      string :name, 100
-      octal_number :mode, 8
-      octal_number :uid, 8
-      octal_number :gid, 8
-      octal_number :size, 12
-      timestamp :mtime, 12
-      octal_number :checksum, 8
-      string :typeflag, 1
-      string :link_name, 100
-      string :magic, 6
-      string :version, 2
-      string :uname, 32
-      string :gname, 32
-      octal_number :dev_major, 8
-      octal_number :dev_minor, 8
-      string :prefix, 155
-    }
+    extend Schema::FieldTypes
+    private_class_method(*Schema::FieldTypes.instance_methods)
 
-    def initialize(values, checksum: nil)
+    SCHEMA = Schema.new(
+      name: fixed_width_string(100),
+      mode: octal_number(8),
+      uid: octal_number(8),
+      gid: octal_number(8),
+      size: octal_number(12),
+      mtime: timestamp(12),
+      checksum: octal_number(8),
+      type_flag: fixed_width_string(1),
+      link_name: fixed_width_string(100),
+      magic: null_terminated_string(6),
+      version: fixed_width_string(2),
+      uname: null_terminated_string(32),
+      gname: null_terminated_string(32),
+      dev_major: octal_number(8),
+      dev_minor: octal_number(8),
+      prefix: fixed_width_string(155)
+    )
+
+    def initialize(values)
       @values = values
-      check_checksum!(checksum) if checksum
     end
 
     SCHEMA.field_names.each do |name|
@@ -42,15 +44,71 @@ module Tar
       "#{prefix}/#{name}"
     end
 
+    def to_s
+      SCHEMA.format(@values)
+    end
+
+    def self.create(
+      path:,
+      size:,
+      mode: 0o644,
+      uid: 0,
+      uname: nil,
+      gid: 0,
+      gname: nil,
+      mtime: Time.now,
+      type_flag: "0",
+      link_name: nil,
+      dev_major: nil,
+      dev_minor: nil
+    )
+      raise ArgumentError, "path may not be nil" if path.nil?
+      raise ArgumentError, "size may not be nil" if size.nil?
+
+      prefix, name = split_path(path)
+
+      values = Header::SCHEMA.coerce(
+        name: name,
+        mode: mode,
+        uid: uid,
+        gid: gid,
+        size: size,
+        mtime: mtime,
+        checksum: nil,
+        type_flag: type_flag,
+        link_name: link_name,
+        magic: "ustar",
+        version: "00",
+        uname: uname,
+        gname: gname,
+        dev_major: dev_major,
+        dev_minor: dev_minor,
+        prefix: prefix
+      )
+
+      new(**values, checksum: Checksum.new(SCHEMA.format(values)).to_i)
+    end
+
     def self.parse(record)
-      expected_checksum = SCHEMA.clear(record, :checksum).chars.sum(&:ord)
-      new(SCHEMA.parse(record), checksum: expected_checksum)
+      values = SCHEMA.parse(record)
+      Checksum.new(record).check!(values.fetch(:checksum))
+      new(values)
     end
 
-    private
-
-    def check_checksum!(expected_checksum)
-      raise ChecksumMismatch, "checksum mismatch at #{path.inspect}: expected #{expected_checksum}, got #{checksum}" unless checksum == expected_checksum
+    def self.clear_checksum(record)
+      SCHEMA.clear(record, :checksum)
     end
+
+    def self.split_path(path)
+      return [nil, path] if path.length <= SCHEMA.field_size(:name)
+
+      split_at = path.index("/", -SCHEMA.field_size(:name) - 1)
+      raise ArgumentError, "path too long: #{path}" if split_at.nil? || split_at > SCHEMA.field_size(:prefix)
+
+      [path[0, split_at], path[(split_at + 1)..-1]]
+    end
+    private_class_method :split_path
+
+    private_class_method :new
   end
 end

@@ -39,7 +39,7 @@ module FileReaderTest
     def test_readpartial_returns_binary_regardless_of_encoding_options
       file = file_containing("tūī", external_encoding: "UTF-8")
 
-      assert_equal binary("t\xC5\xAB"), file.readpartial(3)
+      assert_equal "t\xC5\xAB".b, file.readpartial(3)
     end
 
     def test_readpartial_to_buffer
@@ -48,7 +48,7 @@ module FileReaderTest
 
       file.readpartial 5, buffer
 
-      assert_equal binary("p\xC5\xABta"), buffer
+      assert_equal "p\xC5\xABta".b, buffer
     end
 
     def test_cannot_readpartial_when_closed

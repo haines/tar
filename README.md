@@ -39,13 +39,31 @@ For example, to print the contents of the archive to stdout:
 ```ruby
 require "tar/reader"
 
-File.open "example.tar" do |archive|
+File.open "example.tar", "rb" do |archive|
   Tar::Reader.new(archive).each do |file|
     puts "==> #{file.header.path} (#{file.header.size} bytes)"
     puts file.read
   end
 end
 ```
+
+### Writing tar files
+
+Tar files can be written to IO streams, for example `File`s or `Zlib::GzipWriter`s, using a `Tar::Writer`.
+For example:
+
+```ruby
+require "tar/writer"
+
+File.open "example.tar", "wb" do |archive|
+  Tar::Writer.new(archive) do |writer|
+    writer.add path: "path/to/file" do |file|
+      file.puts "Hello, world!"
+    end
+  end
+end
+```
+
 
 ## Development
 

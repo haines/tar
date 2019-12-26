@@ -3,7 +3,16 @@ AllCops:
   Exclude:
     - bin/rake
 
+Lint/NestedMethodDefinition:
+  Exclude:
+    - test/file_reader_test.rb
+    - test/file_writer_test.rb
+    - test/writer_test.rb
+
 Metrics/AbcSize:
+  Enabled: false
+
+Metrics/BlockLength:
   Enabled: false
 
 Metrics/ClassLength:
@@ -17,6 +26,12 @@ Metrics/MethodLength:
 
 Metrics/ModuleLength:
   Enabled: false
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
+Naming/RescuedExceptionsVariableName:
+  PreferredName: error
 
 Style/BlockDelimiters:
   EnforcedStyle: semantic

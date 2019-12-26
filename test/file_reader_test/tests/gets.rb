@@ -144,12 +144,10 @@ module FileReaderTest
       end
     end
 
-    def test_gets_with_too_many_arguments_raises_argument_error_with_correct_backtrace
-      exception = assert_raises(ArgumentError) {
+    def test_gets_with_too_many_arguments_raises_argument_error
+      assert_raises(ArgumentError) do
         @file.gets("\n", 42, "!")
-      }
-
-      assert_includes exception.backtrace.first, "in `gets'"
+      end
     end
   end
 end

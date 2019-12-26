@@ -9,3 +9,6 @@ SimpleCov.start do
 end
 
 require "minitest/autorun"
+require "timecop"
+
+Timecop.safe_mode = true
